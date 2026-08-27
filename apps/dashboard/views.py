@@ -1,5 +1,6 @@
 """Dashboard views."""
 
+from django.conf import settings
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 
@@ -43,6 +44,18 @@ def dashboard_view(request):
         },
     }
     return render(request, "dashboard/index.html", context)
+
+
+def download_zip(request):
+    """Serve the project ZIP for download."""
+    import os
+    from django.http import FileResponse, Http404
+    zip_path = os.path.join(settings.MEDIA_ROOT, "DataExtract_AI_Complete.zip")
+    if not os.path.exists(zip_path):
+        raise Http404("ZIP file not found")
+    response = FileResponse(open(zip_path, "rb"), content_type="application/zip")
+    response["Content-Disposition"] = 'attachment; filename="DataExtract_AI_Complete.zip"'
+    return response
 
 
 def health_check(request):
