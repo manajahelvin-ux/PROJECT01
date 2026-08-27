@@ -1,0 +1,32 @@
+# ============================================================================
+# TRANSCRIBE AI - dependances runtime
+# Installation : pip install -r requirements.txt
+# ============================================================================
+
+# --- Interface graphique ---------------------------------------------------
+PySide6==6.7.3
+
+# --- Acquisition media -----------------------------------------------------
+yt-dlp>=2024.8.6
+imageio-ffmpeg>=0.5.1          # fournit un binaire ffmpeg de secours
+
+# --- Transcription ---------------------------------------------------------
+faster-whisper>=1.0.3          # moteur par defaut (CTranslate2, rapide, CPU/GPU)
+
+# --- Reseau / API IA -------------------------------------------------------
+httpx>=0.27.0
+tenacity>=8.5.0
+
+# --- Persistance -----------------------------------------------------------
+SQLAlchemy>=2.0.30
+
+# --- Export documents ------------------------------------------------------
+python-docx>=1.1.2
+
+# --- Configuration ---------------------------------------------------------
+python-dotenv>=1.0.1
+pydantic>=2.8.0
+pydantic-settings>=2.4.0
+
+# --- Divers ----------------------------------------------------------------
+platformdirs>=4.2.2

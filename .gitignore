@@ -1,0 +1,48 @@
+# --- Secrets -------------------------------------------------------------
+.env
+.env.local
+*.key
+secrets.json
+
+# --- Python --------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+pip-wheel-metadata/
+*.egg-info/
+.eggs/
+
+# --- Build / packaging ---------------------------------------------------
+build/
+dist/
+*.spec.bak
+
+# --- Tests / tooling -----------------------------------------------------
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# --- Application runtime data -------------------------------------------
+data/
+logs/
+*.log
+*.sqlite3
+*.db
+workdir/
+temp/
+tmp/
+models/
+
+# --- OS / IDE ------------------------------------------------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
