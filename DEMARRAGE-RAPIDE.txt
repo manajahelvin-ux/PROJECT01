@@ -1,0 +1,51 @@
+================================================================
+  TRANSCRIBE AI - DEMARRAGE RAPIDE (Windows)
+================================================================
+
+PREREQUIS
+  Python 3.11 ou superieur : https://www.python.org/downloads/
+  IMPORTANT : cocher "Add Python to PATH" pendant l'installation.
+
+ETAPE 1 - INSTALLATION
+  Double-cliquez sur :  install.bat
+  Le script cree l'environnement, installe les dependances,
+  genere votre fichier .env puis affiche un diagnostic.
+
+ETAPE 2 - LANCEMENT
+  Double-cliquez sur :  run.bat
+
+ETAPE 3 - CLE OPENROUTER (optionnelle)
+  Dans l'application : Parametres > Intelligence artificielle
+  Collez votre cle (https://openrouter.ai/keys), choisissez un
+  modele, puis cliquez sur "Tester la connexion" et "Enregistrer".
+
+  Sans cle, la transcription fonctionne quand meme :
+  seul le post-traitement IA est desactive.
+
+ETAPE 4 - CREER L'EXECUTABLE (facultatif)
+  Double-cliquez sur :  build.bat
+  Resultat :            dist\TranscribeAI.exe
+
+UTILISATION
+  1. Page "Transcrire"
+  2. Collez une URL YouTube ou importez un fichier
+  3. "Analyser" puis "Telecharger et transcrire"
+  4. Corrigez le texte dans l'editeur
+  5. Exportez en TXT, WORD, SRT ou VTT
+
+DOCUMENTATION
+  README.md               vue d'ensemble
+  docs/UTILISATION.md     guide pas a pas et depannage
+  docs/ARCHITECTURE.md    architecture et choix techniques
+  docs/ROADMAP.md         etat des 15 phases
+
+DIAGNOSTIC
+  En cas de probleme, ouvrez une invite de commande ici et tapez :
+      .venv\Scripts\python.exe -m transcribe_ai.main --doctor
+  La commande liste precisement ce qui manque.
+
+SECURITE
+  Votre cle API est stockee uniquement dans le fichier .env local.
+  Elle n'apparait jamais dans les journaux ni dans l'interface.
+  Ne partagez jamais votre fichier .env.
+================================================================
