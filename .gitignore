@@ -47,5 +47,6 @@ Thumbs.db
 .idea/
 .vscode/
 
-# Archive de distribution generee (voir la commande dans docs/ROADMAP.md)
-TranscribeAI-v*.zip
+# L'archive de distribution est versionnee volontairement : elle sert de
+# lien de telechargement direct. La regenerer avec scripts/make_release_zip.sh
+# apres toute modification du code.
