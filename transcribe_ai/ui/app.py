@@ -5,10 +5,11 @@ from __future__ import annotations
 import sys
 
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QIcon
 from PySide6.QtWidgets import QApplication
 
 from transcribe_ai import __app_name__, __version__
+from transcribe_ai.config.paths import app_paths
 from transcribe_ai.utils.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -25,6 +26,9 @@ def create_app(argv: list[str] | None = None) -> QApplication:
     app.setApplicationVersion(__version__)
     app.setOrganizationName("TranscribeAI")
     app.setFont(QFont("Segoe UI", 10))
+    icon = app_paths().resources / "icons" / "app.png"
+    if icon.exists():
+        app.setWindowIcon(QIcon(str(icon)))
     return app
 
 
