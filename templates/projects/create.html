@@ -1,0 +1,32 @@
+{% extends "base/layout.html" %}
+{% block title %}Nouveau Projet — DataExtract AI{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">Nouveau Projet</h1>
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Nom du projet</label>
+                    <input type="text" name="name" class="form-control" required placeholder="Mon projet d'extraction">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Description</label>
+                    <textarea name="description" class="form-control" rows="3" placeholder="Description du projet..."></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">Catégorie</label>
+                    <select name="category" class="form-select">
+                        {% for value, label in categories %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Créer le projet</button>
+                <a href="{% url 'projects:list' %}" class="btn btn-outline-secondary ms-2">Annuler</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

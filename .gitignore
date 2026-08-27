@@ -1,0 +1,87 @@
+# ==========================================
+# DataExtract AI - Git Ignore
+# ==========================================
+
+# --- Environment & Secrets ---
+.env
+.env.local
+.env.production
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+*.whl
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Virtual Environment ---
+venv/
+env/
+ENV/
+.venv/
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+
+# --- Database ---
+db.sqlite3
+db.sqlite3-journal
+*.sqlite
+
+# --- Media & Uploads ---
+media/*
+!media/.gitkeep
+
+# --- Static (collected) ---
+staticfiles/
+collected_static/
+
+# --- Logs ---
+logs/
+*.log
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# --- Celery ---
+celerybeat-schedule
+celerybeat.pid
+
+# --- Coverage ---
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+
+# --- Testing ---
+.pytest_cache/
+.tox/
+.nox/
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- Playwright ---
+playwright-results/
+test-results/
+
+# --- Node (if any frontend tooling) ---
+node_modules/
+package-lock.json
+yarn.lock

@@ -1,0 +1,25 @@
+{% extends "base/layout.html" %}
+{% block title %}{{ project.name }} — DataExtract AI{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ project.name }}</h1>
+            <p class="text-muted mb-0">{{ project.get_category_display }} — {{ project.get_status_display }}</p>
+        </div>
+        <a href="{% url 'extraction:create' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Nouvelle extraction</a>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <p>{{ project.description|default:"Pas de description." }}</p>
+            <div class="row g-3 mt-2">
+                <div class="col-md-3"><small class="text-muted">Propriétaire</small><div class="fw-semibold">{{ project.owner.username }}</div></div>
+                <div class="col-md-3"><small class="text-muted">Créé le</small><div class="fw-semibold">{{ project.created_at|date:"d/m/Y H:i" }}</div></div>
+                <div class="col-md-3"><small class="text-muted">Modifié le</small><div class="fw-semibold">{{ project.updated_at|date:"d/m/Y H:i" }}</div></div>
+                <div class="col-md-3"><small class="text-muted">Extractions</small><div class="fw-semibold">{{ project.extraction_configs.count }}</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
