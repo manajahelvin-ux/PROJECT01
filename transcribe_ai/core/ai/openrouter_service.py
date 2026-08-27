@@ -84,7 +84,7 @@ class OpenRouterService:
             self._client.close()
             self._client = None
 
-    def __enter__(self) -> "OpenRouterService":
+    def __enter__(self) -> OpenRouterService:
         return self
 
     def __exit__(self, *exc_info: object) -> None:
@@ -153,7 +153,7 @@ class OpenRouterService:
             except ValueError:
                 pass
         base = self.settings.ai_retry_backoff ** attempt
-        return min(base + random.uniform(0, 0.5), 60.0)  # noqa: S311 - jitter non cryptographique
+        return min(base + random.uniform(0, 0.5), 60.0)
 
     # ------------------------------------------------------------------ #
     # Requetes
@@ -277,7 +277,7 @@ class OpenRouterService:
             models = self.list_models()
         except OpenRouterError as exc:
             return False, exc.user_message
-        except Exception as exc:  # noqa: BLE001 - filet de securite pour l'UI
+        except Exception as exc:
             logger.error("Test de connexion echoue : %s", exc)
             return False, "Connexion impossible. Verifiez votre cle API ou votre connexion."
 

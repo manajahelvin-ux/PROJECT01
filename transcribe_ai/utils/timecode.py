@@ -13,7 +13,7 @@ def format_duration(seconds: float) -> str:
 
 def format_srt_timestamp(seconds: float) -> str:
     """Timestamp SRT : 00:01:02,500 (virgule decimale)."""
-    total_ms = int(round(max(seconds or 0, 0) * 1000))
+    total_ms = round(max(seconds or 0, 0) * 1000)
     ms = total_ms % 1000
     total_s = total_ms // 1000
     h, rem = divmod(total_s, 3600)

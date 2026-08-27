@@ -35,7 +35,7 @@ def wav_duration(path: Path) -> float:
     try:
         with wave.open(str(path), "rb") as handle:
             return handle.getnframes() / float(handle.getframerate() or 1)
-    except Exception:  # noqa: BLE001 - fichier non WAV ou illisible
+    except Exception:
         return 0.0
 
 
@@ -84,7 +84,7 @@ class FasterWhisperEngine(WhisperTranscriptionEngine):
 
                 if ctranslate2.get_cuda_device_count() > 0:
                     device = "cuda"
-            except Exception:  # noqa: BLE001
+            except Exception:
                 pass
         compute = self.compute_type if device == "cpu" else "float16"
         logger.info(
@@ -128,7 +128,7 @@ class FasterWhisperEngine(WhisperTranscriptionEngine):
                 beam_size=5,
                 condition_on_previous_text=False,  # limite la propagation d'hallucinations
             )
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             raise TranscriptionError(
                 str(exc), user_message="La transcription a echoue."
             ) from exc

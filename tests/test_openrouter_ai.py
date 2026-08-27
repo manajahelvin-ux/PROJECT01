@@ -103,7 +103,9 @@ class TestOpenRouterService:
     def test_429_retente_puis_reussit(self, service: OpenRouterService) -> None:
         route = respx.post(CHAT).mock(
             side_effect=[
-                httpx.Response(429, json={"error": {"message": "rate"}}, headers={"Retry-After": "0"}),
+                httpx.Response(
+                    429, json={"error": {"message": "rate"}}, headers={"Retry-After": "0"}
+                ),
                 httpx.Response(200, json=completion("ok")),
             ]
         )

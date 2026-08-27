@@ -39,7 +39,7 @@ def find_ffmpeg(configured: str = "") -> str | None:
         import imageio_ffmpeg
 
         return imageio_ffmpeg.get_ffmpeg_exe()
-    except Exception:  # noqa: BLE001 - dependance optionnelle
+    except Exception:
         return None
 
 
@@ -91,12 +91,12 @@ class FFmpegAudioExtractor(AudioExtractor):
             "-show_format", str(media_path),
         ]
         try:
-            out = subprocess.run(  # noqa: S603 - arguments entierement controles
+            out = subprocess.run(
                 cmd, capture_output=True, text=True, timeout=60, creationflags=_NO_WINDOW
             )
             data = json.loads(out.stdout or "{}")
             return float(data.get("format", {}).get("duration", 0.0))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.debug("ffprobe a echoue sur %s : %s", media_path.name, exc)
             return 0.0
 
@@ -105,13 +105,13 @@ class FFmpegAudioExtractor(AudioExtractor):
         if not self._ffmpeg:
             return 0.0
         try:
-            out = subprocess.run(  # noqa: S603
+            out = subprocess.run(
                 [self._ffmpeg, "-i", str(media_path)],
                 capture_output=True, text=True, timeout=60, creationflags=_NO_WINDOW,
             )
             match = re.search(r"Duration: (\d+:\d+:\d+\.\d+)", out.stderr)
             return parse_timestamp(match.group(1)) if match else 0.0
-        except Exception:  # noqa: BLE001
+        except Exception:
             return 0.0
 
     # ------------------------------------------------------------------ #
@@ -145,7 +145,7 @@ class FFmpegAudioExtractor(AudioExtractor):
         ]
         logger.info("Extraction audio : %s -> %s", media_path.name, destination.name)
 
-        process = subprocess.Popen(  # noqa: S603
+        process = subprocess.Popen(
             cmd,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,

@@ -17,8 +17,10 @@ from transcribe_ai.core.ai.prompts import get_prompt, translation_prompt
 from transcribe_ai.core.exceptions import OpenRouterError
 from transcribe_ai.core.interfaces import (
     CancellationToken,
-    OpenRouterProcessor as BaseOpenRouterProcessor,
     ProgressCallback,
+)
+from transcribe_ai.core.interfaces import (
+    OpenRouterProcessor as BaseOpenRouterProcessor,
 )
 from transcribe_ai.core.models import AIResult, AIUsage, PipelineStage, ProgressEvent
 from transcribe_ai.utils.logging_config import get_logger

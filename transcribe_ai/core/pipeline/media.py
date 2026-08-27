@@ -53,7 +53,7 @@ class LocalFileProvider(MediaProvider):
             from transcribe_ai.core.pipeline.audio import FFmpegAudioExtractor
 
             duration = FFmpegAudioExtractor().probe_duration(path)
-        except Exception as exc:  # noqa: BLE001 - information optionnelle
+        except Exception as exc:
             logger.debug("ffprobe indisponible pour %s : %s", path.name, exc)
 
         return MediaInfo(
@@ -96,7 +96,10 @@ class YtDlpProvider(MediaProvider):
         except ImportError as exc:  # pragma: no cover - depend de l'installation
             raise MissingDependencyError(
                 "yt-dlp est introuvable",
-                user_message="yt-dlp n'est pas installe. Executez : pip install -r requirements.txt",
+                user_message=(
+                    "yt-dlp n'est pas installe. "
+                    "Executez : pip install -r requirements.txt"
+                ),
             ) from exc
         return yt_dlp
 
@@ -108,7 +111,7 @@ class YtDlpProvider(MediaProvider):
         try:
             with yt_dlp.YoutubeDL(options) as ydl:
                 info = ydl.extract_info(source, download=False)
-        except Exception as exc:  # noqa: BLE001 - yt-dlp leve des types varies
+        except Exception as exc:
             logger.warning("Analyse impossible pour %s : %s", source, exc)
             raise InvalidURLError(
                 str(exc),
@@ -163,7 +166,8 @@ class YtDlpProvider(MediaProvider):
                     progress,
                     PipelineStage.DOWNLOAD,
                     min(pct, 99.0),
-                    f"Telechargement… {pct:.0f} % ({speed / 1e6:.1f} Mo/s)" if speed
+                    f"Telechargement… {pct:.0f} % ({speed / 1e6:.1f} Mo/s)"
+                    if speed
                     else f"Telechargement… {pct:.0f} %",
                 )
             elif status.get("status") == "finished":
@@ -186,7 +190,7 @@ class YtDlpProvider(MediaProvider):
                 if "entries" in info:
                     info = next(e for e in info["entries"] if e)
                 path = Path(ydl.prepare_filename(info))
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.error("Telechargement echoue : %s", exc)
             raise DownloadError(
                 str(exc),

@@ -47,6 +47,10 @@ ignore = ["N818"]  # nos exceptions suivent une convention de nommage explicite
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["ARG001", "ARG002", "N802", "N806"]
+# Les implementations respectent une signature imposee par les interfaces
+# abstraites : certains parametres y sont volontairement inutilises.
+"transcribe_ai/core/pipeline/media.py" = ["ARG002"]
+"transcribe_ai/core/engines/whisper_engine.py" = ["ARG002"]
 
 [tool.black]
 line-length = 100

@@ -9,8 +9,8 @@ que renvoye — et donc refacture — a OpenRouter.
 from __future__ import annotations
 
 import json
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 from transcribe_ai.config.settings import get_settings
 from transcribe_ai.core.interfaces import TextChunker

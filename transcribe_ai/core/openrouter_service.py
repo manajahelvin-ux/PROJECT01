@@ -11,4 +11,4 @@ from transcribe_ai.core.ai.openrouter_service import (
     OpenRouterService,
 )
 
-__all__ = ["ChatResponse", "OpenRouterService", "MAX_PROMPT_CHARS", "RETRYABLE_STATUS"]
+__all__ = ["MAX_PROMPT_CHARS", "RETRYABLE_STATUS", "ChatResponse", "OpenRouterService"]
