@@ -46,3 +46,6 @@ models/
 Thumbs.db
 .idea/
 .vscode/
+
+# Archive de distribution generee (voir la commande dans docs/ROADMAP.md)
+TranscribeAI-v*.zip
