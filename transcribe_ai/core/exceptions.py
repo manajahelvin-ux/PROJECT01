@@ -8,13 +8,25 @@ from __future__ import annotations
 
 
 class TranscribeAIError(Exception):
-    """Exception de base. Porte un message technique et un message utilisateur."""
+    """Exception de base. Porte un message technique et un message utilisateur.
+
+    `message` reste technique (journaux, debogage) ; `user_message` est le
+    seul texte montre a l'utilisateur. Lorsqu'une sous-classe definit un
+    message dedie, celui-ci prime sur le detail technique, qui serait
+    incomprehensible dans une notification.
+    """
 
     default_user_message = "Une erreur inattendue est survenue."
 
     def __init__(self, message: str = "", *, user_message: str | None = None) -> None:
         super().__init__(message or self.default_user_message)
-        self.user_message = user_message or message or self.default_user_message
+        self.detail = message
+        if user_message:
+            self.user_message = user_message
+        elif type(self).default_user_message != TranscribeAIError.default_user_message:
+            self.user_message = self.default_user_message
+        else:
+            self.user_message = message or self.default_user_message
 
 
 # --- Configuration ---------------------------------------------------------
