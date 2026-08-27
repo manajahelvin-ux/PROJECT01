@@ -7,6 +7,10 @@ Django>=5.0,<5.2
 django-environ>=0.11.2
 dj-database-url>=2.1.0
 
+# --- Django Extensions ---
+django-cors-headers>=4.3.0
+django-ratelimit>=4.1.0
+
 # --- Django REST Framework ---
 djangorestframework>=3.15,<4.0
 drf-spectacular>=0.27.0
@@ -30,14 +34,11 @@ pyarrow>=15.0.0
 celery[redis]>=5.3.0
 redis>=5.0.0
 
-# --- Export Formats ---
-pyarrow>=15.0.0
+# --- Static Files ---
+whitenoise>=6.6.0
 
 # --- Utilities ---
 python-dateutil>=2.9.0
 pydantic>=2.6.0
 structlog>=24.1.0
 Pillow>=10.2.0
-
-# --- Webhook / Integrations ---
-requests>=2.31.0
