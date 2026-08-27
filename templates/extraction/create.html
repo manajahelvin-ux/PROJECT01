@@ -1,0 +1,176 @@
+{% extends "base/layout.html" %}
+{% block title %}Nouvelle Extraction — DataExtract AI{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">Créer une extraction</h1>
+
+    <form method="post" id="extractionForm">
+        {% csrf_token %}
+
+        <!-- Step 1: Source -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h5 class="card-title mb-3"><i class="bi bi-1-circle-fill text-primary me-2"></i>Source</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Projet</label>
+                        <select name="project" class="form-select" required>
+                            <option value="">Sélectionner un projet</option>
+                            {% for p in projects %}
+                            <option value="{{ p.id }}">{{ p.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">Nom de l'extraction</label>
+                        <input type="text" name="name" class="form-control" placeholder="Ex: Produits Example.com" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">URL cible</label>
+                        <input type="url" name="target_url" class="form-control" placeholder="https://example.com/products" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Mode de rendu</label>
+                        <select name="render_mode" class="form-select">
+                            <option value="static">Statique (HTTP)</option>
+                            <option value="javascript">JavaScript (Playwright)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Wait for selector (JS)</label>
+                        <input type="text" name="wait_for_selector" class="form-control" placeholder=".product-card">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Pages max</label>
+                        <input type="number" name="max_pages" class="form-control" value="1" min="1" max="100">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 2: Selectors -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title mb-0"><i class="bi bi-2-circle-fill text-primary me-2"></i>Champs à extraire</h5>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="addSelectorRow()">
+                        <i class="bi bi-plus-lg"></i> Ajouter un champ
+                    </button>
+                </div>
+
+                <div id="selectorsContainer">
+                    <div class="selector-row row g-2 mb-2 align-items-end border rounded p-2">
+                        <div class="col-md-2">
+                            <label class="form-label small">Nom</label>
+                            <input type="text" class="form-control form-control-sm sel-name" placeholder="product_name">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small">Type</label>
+                            <select class="form-select form-select-sm sel-type">
+                                <option value="text">Texte</option>
+                                <option value="number">Nombre</option>
+                                <option value="price">Prix</option>
+                                <option value="date">Date</option>
+                                <option value="url">URL</option>
+                                <option value="email">Email</option>
+                                <option value="image">Image</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small">Méthode</label>
+                            <select class="form-select form-select-sm sel-method">
+                                <option value="css">CSS</option>
+                                <option value="xpath">XPath</option>
+                                <option value="regex">Regex</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Sélecteur</label>
+                            <input type="text" class="form-control form-control-sm sel-selector" placeholder="h2.product-title">
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input sel-required" type="checkbox">
+                                <label class="form-check-label small">Req.</label>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="this.closest('.selector-row').remove()">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="selectors_json" id="selectorsJson" value="[]">
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-primary" onclick="analyzePage()">
+                <i class="bi bi-search me-1"></i> Analyser la page
+            </button>
+            <button type="submit" class="btn btn-primary">
+                <i class="bi bi-check-lg me-1"></i> Créer l'extraction
+            </button>
+        </div>
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+function addSelectorRow() {
+    const container = document.getElementById('selectorsContainer');
+    const row = container.querySelector('.selector-row').cloneNode(true);
+    row.querySelectorAll('input, select').forEach(el => { if(el.type !== 'checkbox') el.value = ''; else el.checked = false; });
+    container.appendChild(row);
+}
+
+function collectSelectors() {
+    const rows = document.querySelectorAll('.selector-row');
+    const selectors = [];
+    rows.forEach(row => {
+        const name = row.querySelector('.sel-name').value;
+        if (name) {
+            selectors.push({
+                name: name,
+                type: row.querySelector('.sel-type').value,
+                method: row.querySelector('.sel-method').value,
+                selector: row.querySelector('.sel-selector').value,
+                required: row.querySelector('.sel-required').checked,
+                attribute: '',
+            });
+        }
+    });
+    return selectors;
+}
+
+document.getElementById('extractionForm').addEventListener('submit', function() {
+    document.getElementById('selectorsJson').value = JSON.stringify(collectSelectors());
+});
+
+function analyzePage() {
+    const url = document.querySelector('[name=target_url]').value;
+    if (!url) { alert('Entrez une URL d\'abord'); return; }
+    fetch('{% url "extraction:analyze" %}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded', 'X-CSRFToken': '{{ csrf_token }}'},
+        body: 'url=' + encodeURIComponent(url),
+    }).then(r => r.json()).then(data => {
+        if (data.success && data.detected_fields) {
+            data.detected_fields.forEach(f => {
+                const container = document.getElementById('selectorsContainer');
+                const row = container.querySelector('.selector-row').cloneNode(true);
+                row.querySelector('.sel-name').value = f.name.toLowerCase().replace(/\s+/g, '_');
+                row.querySelector('.sel-selector').value = f.selector;
+                container.appendChild(row);
+            });
+            alert(`${data.detected_fields.length} champs détectés !`);
+        } else {
+            alert('Erreur: ' + (data.error || 'Analyse échouée'));
+        }
+    });
+}
+</script>
+{% endblock %}
+{% endblock %}

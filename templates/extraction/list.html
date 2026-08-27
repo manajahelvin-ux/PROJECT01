@@ -1,0 +1,59 @@
+{% extends "base/layout.html" %}
+{% block title %}Extractions — DataExtract AI{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">Extractions</h1>
+            <p class="text-muted mb-0">Configuration et historique des extractions</p>
+        </div>
+        <a href="{% url 'extraction:create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i> Nouvelle extraction
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            {% if configs %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Projet</th>
+                            <th>URL</th>
+                            <th>Mode</th>
+                            <th>Version</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for config in configs %}
+                        <tr>
+                            <td><a href="{% url 'extraction:detail' config.id %}" class="fw-semibold text-decoration-none">{{ config.name }}</a></td>
+                            <td>{{ config.project.name }}</td>
+                            <td class="text-truncate" style="max-width: 200px;"><small class="text-muted">{{ config.target_url }}</small></td>
+                            <td><span class="badge bg-{% if config.render_mode == 'javascript' %}warning{% else %}info{% endif %}">{{ config.get_render_mode_display }}</span></td>
+                            <td>v{{ config.current_version }}</td>
+                            <td><span class="badge bg-{% if config.is_active %}success{% else %}secondary{% endif %}">{% if config.is_active %}Actif{% else %}Inactif{% endif %}</span></td>
+                            <td>
+                                <a href="{% url 'extraction:test' config.id %}" class="btn btn-sm btn-outline-primary" title="Tester"><i class="bi bi-play-circle"></i></a>
+                                <a href="{% url 'extraction:run' config.id %}" class="btn btn-sm btn-outline-success" title="Lancer"><i class="bi bi-lightning"></i></a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-download fs-1 text-muted d-block mb-3"></i>
+                <p class="text-muted">Aucune extraction configurée.</p>
+                <a href="{% url 'extraction:create' %}" class="btn btn-primary">Créer ma première extraction</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

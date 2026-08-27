@@ -1,0 +1,111 @@
+{% extends "base/layout.html" %}
+{% block title %}{{ dataset.name }} — DataExtract AI{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ dataset.name }}</h1>
+            <p class="text-muted mb-0">{{ dataset.total_records }} enregistrements — Qualité: {{ dataset.avg_quality_score|floatformat:1 }}%</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'datasets:quality' dataset.id %}" class="btn btn-outline-warning"><i class="bi bi-shield-check me-1"></i>Analyser</a>
+            <div class="dropdown">
+                <button class="btn btn-outline-success dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-download me-1"></i>Exporter</button>
+                <ul class="dropdown-menu">
+                    <form method="post" action="{% url 'datasets:export' dataset.id %}">{% csrf_token %}
+                    <li><button class="dropdown-item" name="format" value="csv">📄 CSV</button></li>
+                    <li><button class="dropdown-item" name="format" value="xlsx">📊 Excel XLSX</button></li>
+                    <li><button class="dropdown-item" name="format" value="json">📋 JSON</button></li>
+                    <li><button class="dropdown-item" name="format" value="xml">📝 XML</button></li>
+                    <li><button class="dropdown-item" name="format" value="parquet">📦 Parquet</button></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><button class="dropdown-item" name="format" value="csv"><input type="checkbox" name="valid_only" value="on" checked> Valides uniquement</button></li>
+                    </form>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quality Report -->
+    {% if dataset.quality_report %}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-semibold mb-3">Data Quality Score: {{ dataset.quality_report.global_score }}/100</h6>
+            <div class="row g-3">
+                {% for dim, score in "Completeness:"|add:dataset.quality_report.completeness|add:"|Accuracy:"|add:dataset.quality_report.accuracy|add:"|Consistency:"|add:dataset.quality_report.consistency|add:"|Uniqueness:"|add:dataset.quality_report.uniqueness|add:"|Validity:"|add:dataset.quality_report.validity %}
+                {% endfor %}
+                <div class="col"><small class="text-muted">Complétude</small><div class="fw-bold">{{ dataset.quality_report.completeness }}%</div></div>
+                <div class="col"><small class="text-muted">Précision</small><div class="fw-bold">{{ dataset.quality_report.accuracy }}%</div></div>
+                <div class="col"><small class="text-muted">Cohérence</small><div class="fw-bold">{{ dataset.quality_report.consistency }}%</div></div>
+                <div class="col"><small class="text-muted">Unicité</small><div class="fw-bold">{{ dataset.quality_report.uniqueness }}%</div></div>
+                <div class="col"><small class="text-muted">Validité</small><div class="fw-bold">{{ dataset.quality_report.validity }}%</div></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Filters -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-2">
+            <form method="get" class="row g-2 align-items-center">
+                <div class="col-auto"><input type="text" name="q" value="{{ search }}" class="form-control form-control-sm" placeholder="Rechercher..."></div>
+                <div class="col-auto">
+                    <select name="status" class="form-select form-select-sm">
+                        <option value="">Tous les statuts</option>
+                        <option value="VALID" {% if status_filter == "VALID" %}selected{% endif %}>Valide</option>
+                        <option value="INVALID" {% if status_filter == "INVALID" %}selected{% endif %}>Invalide</option>
+                        <option value="WARNING" {% if status_filter == "WARNING" %}selected{% endif %}>Attention</option>
+                        <option value="REVIEW" {% if status_filter == "REVIEW" %}selected{% endif %}>À vérifier</option>
+                    </select>
+                </div>
+                <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Filtrer</button></div>
+                <div class="col-auto ms-auto"><small class="text-muted">{{ total }} résultats</small></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-sm mb-0">
+                    <thead><tr><th>#</th>{% for f in fields %}<th>{{ f.name }}</th>{% endfor %}<th>Statut</th><th>Score</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    {% for record in records %}
+                    <tr>
+                        <td><small class="text-muted">{{ forloop.counter0|add:page }}</small></td>
+                        {% for f in fields %}
+                        <td>{{ record.data|default_if_none:"" }}{% with val=record.data|default_if_none:"" %}{% endwith %}</td>
+                        {% endfor %}
+                        <td><span class="badge bg-{% if record.validation_status == 'VALID' %}success{% elif record.validation_status == 'INVALID' %}danger{% elif record.validation_status == 'WARNING' %}warning{% else %}info{% endif %}">{{ record.validation_status }}</span></td>
+                        <td>{{ record.quality_score|floatformat:0 }}%</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <form method="post" action="{% url 'datasets:validate_record' dataset.id record.id %}" class="d-inline">{% csrf_token %}
+                                    <button name="status" value="VALID" class="btn btn-outline-success btn-sm" title="Valider"><i class="bi bi-check"></i></button>
+                                    <button name="status" value="REVIEW" class="btn btn-outline-info btn-sm" title="À vérifier"><i class="bi bi-eye"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="{{ fields|length|add:4 }}" class="text-center text-muted py-4">Aucun enregistrement</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if total_pages > 1 %}
+            <div class="card-footer bg-white border-0 pt-2">
+                <nav><ul class="pagination pagination-sm justify-content-center mb-0">
+                    {% if page > 1 %}<li class="page-item"><a class="page-link" href="?page={{ page|add:"-1" }}&q={{ search }}&status={{ status_filter }}">Préc.</a></li>{% endif %}
+                    <li class="page-item active"><span class="page-link">{{ page }} / {{ total_pages }}</span></li>
+                    {% if page < total_pages %}<li class="page-item"><a class="page-link" href="?page={{ page|add:"1" }}&q={{ search }}&status={{ status_filter }}">Suiv.</a></li>{% endif %}
+                </ul></nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

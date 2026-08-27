@@ -1,0 +1,35 @@
+{% extends "base/layout.html" %}
+{% block title %}Projets — DataExtract AI{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 mb-0">Projets</h1>
+        <a href="{% url 'projects:create' %}" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Nouveau projet</a>
+    </div>
+    <div class="row g-4">
+        {% for project in projects %}
+        <div class="col-md-6 col-xl-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0"><a href="{% url 'projects:detail' project.id %}" class="text-decoration-none text-dark">{{ project.name }}</a></h5>
+                        <span class="badge bg-{% if project.status == 'ACTIVE' %}success{% elif project.status == 'DRAFT' %}secondary{% elif project.status == 'PAUSED' %}warning{% else %}info{% endif %}">{{ project.get_status_display }}</span>
+                    </div>
+                    <p class="text-muted small mb-2">{{ project.description|truncatechars:100 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark">{{ project.get_category_display }}</span>
+                        <small class="text-muted">{{ project.updated_at|date:"d/m/Y" }}</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-folder-plus fs-1 text-muted d-block mb-3"></i>
+            <p class="text-muted">Aucun projet. Créez-en un pour commencer !</p>
+            <a href="{% url 'projects:create' %}" class="btn btn-primary">Créer un projet</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

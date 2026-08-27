@@ -1,0 +1,75 @@
+{% extends "base/layout.html" %}
+{% block title %}{{ config.name }} — DataExtract AI{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">{{ config.name }}</h1>
+            <p class="text-muted mb-0">v{{ config.current_version }} — {{ config.project.name }} — <span class="badge bg-{% if config.render_mode == 'javascript' %}warning{% else %}info{% endif %}">{{ config.get_render_mode_display }}</span></p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'extraction:test' config.id %}" class="btn btn-outline-primary"><i class="bi bi-play-circle me-1"></i>Tester</a>
+            <a href="{% url 'extraction:run' config.id %}" class="btn btn-success"><i class="bi bi-lightning me-1"></i>Lancer</a>
+        </div>
+    </div>
+
+    <!-- URL Info -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-semibold mb-2">URL cible</h6>
+            <a href="{{ config.target_url }}" target="_blank" class="text-decoration-none">{{ config.target_url }}</a>
+        </div>
+    </div>
+
+    <!-- Selectors -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-semibold mb-3">Sélecteurs ({{ selectors.count }})</h6>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead><tr><th>Nom</th><th>Type</th><th>Méthode</th><th>Sélecteur</th><th>Requis</th></tr></thead>
+                    <tbody>
+                    {% for sel in selectors %}
+                    <tr>
+                        <td>{{ sel.name }}</td>
+                        <td><span class="badge bg-light text-dark">{{ sel.get_selector_type_display }}</span></td>
+                        <td>{{ sel.get_method_display }}</td>
+                        <td><code>{{ sel.selector_value }}</code></td>
+                        <td>{% if sel.is_required %}<i class="bi bi-check-circle-fill text-success"></i>{% else %}<i class="bi bi-dash text-muted"></i>{% endif %}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-muted text-center">Aucun sélecteur configuré</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jobs History -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h6 class="fw-semibold mb-3">Historique des extractions</h6>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead><tr><th>Date</th><th>Statut</th><th>Pages</th><th>Lignes</th><th>Valides</th><th>Durée</th></tr></thead>
+                    <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td>{{ job.created_at|date:"d/m/Y H:i" }}</td>
+                        <td><span class="badge bg-{% if job.status == 'SUCCESS' %}success{% elif job.status == 'FAILED' %}danger{% elif job.status == 'RUNNING' %}primary{% else %}secondary{% endif %}">{{ job.status }}</span></td>
+                        <td>{{ job.pages_scraped }}</td>
+                        <td>{{ job.rows_extracted }}</td>
+                        <td>{{ job.rows_valid }}</td>
+                        <td>{% if job.duration_seconds %}{{ job.duration_seconds|floatformat:1 }}s{% else %}-{% endif %}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6" class="text-muted text-center">Aucune extraction exécutée</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

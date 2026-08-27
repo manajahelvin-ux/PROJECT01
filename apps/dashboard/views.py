@@ -3,6 +3,11 @@
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 
+from apps.projects.models import Project
+from apps.extraction.models import ExtractionJob
+from apps.datasets.models import Dataset, DataRecord
+from apps.quality.models import QualityReport
+
 
 def index(request):
     """Redirect root URL to dashboard."""
@@ -11,15 +16,30 @@ def index(request):
 
 def dashboard_view(request):
     """Main dashboard view with KPIs."""
+    if not request.user.is_authenticated:
+        return redirect("authentication:login")
+
+    total_projects = Project.objects.count()
+    total_websites = 0
+    total_extractions = ExtractionJob.objects.count()
+    total_records = DataRecord.objects.count()
+
+    quality_reports = QualityReport.objects.all()
+    avg_quality = 0
+    if quality_reports.exists():
+        avg_quality = round(sum(q.global_score for q in quality_reports) / quality_reports.count(), 1)
+
+    active_extractions = ExtractionJob.objects.filter(status="RUNNING").count()
+
     context = {
         "page_title": "Dashboard",
         "kpi": {
-            "total_projects": 0,
-            "total_websites": 0,
-            "total_extractions": 0,
-            "total_records": 0,
-            "avg_quality_score": 0,
-            "active_extractions": 0,
+            "total_projects": total_projects,
+            "total_websites": total_websites,
+            "total_extractions": total_extractions,
+            "total_records": total_records,
+            "avg_quality_score": avg_quality,
+            "active_extractions": active_extractions,
         },
     }
     return render(request, "dashboard/index.html", context)
@@ -34,7 +54,6 @@ def health_check(request):
         "openrouter": "ok",
     }
 
-    # Check database
     try:
         from django.db import connection
         with connection.cursor() as cursor:

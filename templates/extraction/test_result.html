@@ -1,0 +1,58 @@
+{% extends "base/layout.html" %}
+{% block title %}Test — {{ config.name }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h1 class="h3 mb-4">Résultat du test — {{ config.name }}</h1>
+
+    {% if result.success %}
+    <div class="alert alert-success"><i class="bi bi-check-circle me-1"></i> Test réussi — {{ result.fields_valid }}/{{ result.fields_total }} champs valides, {{ result.total_possible }} enregistrements possibles</div>
+
+    <!-- Fields tested -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <h6 class="fw-semibold mb-3">Champs testés</h6>
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead><tr><th>Champ</th><th>Méthode</th><th>Résultats</th><th>Statut</th><th>Exemple</th></tr></thead>
+                    <tbody>
+                    {% for field in result.fields_tested %}
+                    <tr>
+                        <td>{{ field.name }}</td>
+                        <td><code>{{ field.method }}: {{ field.selector }}</code></td>
+                        <td>{{ field.count }}</td>
+                        <td>{% if field.valid %}<span class="badge bg-success">OK</span>{% else %}<span class="badge bg-danger">Missing</span>{% endif %}</td>
+                        <td><small class="text-muted">{{ field.sample.0|truncatechars:60 }}</small></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sample records -->
+    {% if result.records %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <h6 class="fw-semibold mb-3">Aperçu des données</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                    <thead><tr>{% for key in result.records.0.keys %}<th>{{ key }}</th>{% endfor %}</tr></thead>
+                    <tbody>
+                    {% for record in result.records %}
+                    <tr>{% for val in record.values %}<td>{{ val|truncatechars:50 }}</td>{% endfor %}</tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="alert alert-danger"><i class="bi bi-x-circle me-1"></i> Test échoué : {{ result.error }}</div>
+    {% endif %}
+
+    <a href="{% url 'extraction:detail' config.id %}" class="btn btn-outline-secondary mt-3"><i class="bi bi-arrow-left me-1"></i>Retour</a>
+</div>
+{% endblock %}
